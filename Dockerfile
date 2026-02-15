@@ -10,7 +10,7 @@ RUN chmod +x gradlew
 RUN ./gradlew --no-daemon dependencies || true
 
 # 소스 복사 후 빌드
-COPY . .
+COPY src .
 RUN ./gradlew --no-daemon clean bootJar
 
 # ---- runtime stage ----
