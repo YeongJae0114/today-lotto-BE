@@ -2,15 +2,16 @@
 FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 
-# gradle 캐시 최적화
+# gradle wrapper & 설정 파일 먼저 복사
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle settings.gradle ./
 RUN chmod +x gradlew
-RUN ./gradlew --no-daemon dependencies || true
 
-# 소스 복사 후 빌드
-COPY src .
+# 전체 소스 복사
+COPY . .
+
+# 빌드
 RUN ./gradlew --no-daemon clean bootJar
 
 # ---- runtime stage ----
@@ -23,6 +24,4 @@ USER appuser
 COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
-ENV SERVER_PORT=8080
-
 ENTRYPOINT ["java","-jar","/app/app.jar"]
